@@ -39,7 +39,7 @@ hipsnip_mongodb_mongod "three" do
   replicaSet 'play'
 end
 
-hipsnip_mongodb_replicaSet "play" do
+hipsnip_mongodb_replica_set "play" do
   members [
     {
       'id' => 0,
@@ -67,7 +67,7 @@ hipsnip_mongodb_mongod "four" do
   replicaSet 'play'
 end
 
-hipsnip_mongodb_replicaSet "play" do
+hipsnip_mongodb_replica_set "play" do
   members [
     {
       'id' => 0,
@@ -93,7 +93,7 @@ end
 
 # Remove a node
 
-hipsnip_mongodb_replicaSet "play" do
+hipsnip_mongodb_replica_set "play" do
   members [
     {
       'id' => 0,

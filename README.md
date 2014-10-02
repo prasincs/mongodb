@@ -156,7 +156,7 @@ See below for examples.
 blank to configure without a replica set (defaults to "")
 
 > NOTE: Setting the `replicaSet` attribute alone will not trigger replica set
-creation. You need to use the `hipsnip_mongodb_replicaSet` provider to do that.
+creation. You need to use the `hipsnip_mongodb_replica_set` provider to do that.
 
 ### Examples
 
@@ -213,7 +213,7 @@ To run a health check on the default node:
 
 
 
-## hipsnip_mongodb_replicaSet
+## hipsnip_mongodb_replica_set
 
 Takes a list of member nodes, and then it either initializes or updates the given
 replica set (if it already exists). It also performs a health check after the replica
@@ -249,7 +249,7 @@ refer to the MongoDB documentation for details.
 
 To set up a replica set with a couple of nodes:
 
-    hipsnip_mongodb_replicaSet "my_set" do
+    hipsnip_mongodb_replica_set "my_set" do
         members [
             {
                 'id' => 0,

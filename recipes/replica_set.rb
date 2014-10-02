@@ -75,6 +75,6 @@ else
 end
 
 
-hipsnip_mongodb_replicaSet node['mongodb']['mongod']['replicaSet'] do
+hipsnip_mongodb_replica_set node['mongodb']['mongod']['replicaSet'] do
   members replicaSetMembers
 end
