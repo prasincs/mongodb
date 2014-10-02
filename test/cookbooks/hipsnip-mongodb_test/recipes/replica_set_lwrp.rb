@@ -24,22 +24,22 @@ include_recipe "hipsnip-mongodb_test::default"
 hipsnip_mongodb_mongod "one" do
   bind_ip "127.0.0.1"
   port 27017
-  replica_set 'play'
+  replicaSet 'play'
 end
 
 hipsnip_mongodb_mongod "two" do
   bind_ip "127.0.0.1"
   port 27018
-  replica_set 'play'
+  replicaSet 'play'
 end
 
 hipsnip_mongodb_mongod "three" do
   bind_ip "127.0.0.1"
   port 27019
-  replica_set 'play'
+  replicaSet 'play'
 end
 
-hipsnip_mongodb_replica_set "play" do
+hipsnip_mongodb_replicaSet "play" do
   members [
     {
       'id' => 0,
@@ -64,10 +64,10 @@ end
 hipsnip_mongodb_mongod "four" do
   bind_ip "127.0.0.1"
   port 27020
-  replica_set 'play'
+  replicaSet 'play'
 end
 
-hipsnip_mongodb_replica_set "play" do
+hipsnip_mongodb_replicaSet "play" do
   members [
     {
       'id' => 0,
@@ -93,7 +93,7 @@ end
 
 # Remove a node
 
-hipsnip_mongodb_replica_set "play" do
+hipsnip_mongodb_replicaSet "play" do
   members [
     {
       'id' => 0,

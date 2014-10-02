@@ -4,7 +4,7 @@ require 'serverspec'
 include Serverspec::Helper::Exec
 include Serverspec::Helper::DetectOS
 
-# This scenario is fully tested by "replica_set_lwrp"
+# This scenario is fully tested by "replicaSetLwrp"
 # Here we're just checking that cluster nodes are up, and that authentication works
 
 ################################################################################

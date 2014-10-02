@@ -1,6 +1,6 @@
 #
 # Cookbook Name:: hipsnip-mongodb
-# Provider:: replica_set
+# Provider:: replicaSet
 #
 # Copyright 2013, HipSnip Ltd.
 #
@@ -22,7 +22,7 @@ action :create do
   admin_pass = node['mongodb']['admin_user']['password']
   members = new_resource.members
   seed_list = members.collect{|n| n['host']}
-  replica_set_name = new_resource.replica_set
+  replicaSetName = new_resource.replicaSet
 
   Chef::Log.info "Configuring replica set with #{members.length} member(s)"
 
@@ -50,14 +50,14 @@ action :create do
 
   # Initial state of replica set in this pass
   #    Not updated even after calling "rs.initiate()"
-  replica_set_initiated = false
+  replicaSetInitiated = false
 
   if members.length == 1
     connection = create_single_node_connection(*members[0]['host'].split(':'), admin_user, admin_pass)
 
     begin
       connection['admin'].command({'replSetGetStatus' => 1})
-      replica_set_initiated = true
+      replicaSetInitiated = true
     rescue ::Mongo::OperationFailure => ex
       # unless it's telling us to initiate the replica set
       unless ex.message.include? 'run rs.initiate'
@@ -66,9 +66,9 @@ action :create do
     end
   else
     begin
-      connection = create_replica_set_connection(seed_list, replica_set_name, admin_user, admin_pass)
+      connection = createReplicaSetConnection(seed_list, replicaSetName, admin_user, admin_pass)
       connection['admin'].command({'replSetGetStatus' => 1})
-      replica_set_initiated = true
+      replicaSetInitiated = true
     rescue ::Mongo::ConnectionFailure => ex
       # unless it's telling us that these members don't form a replica set
       unless ex.message.include? 'Cannot connect to a replica set using seeds'
@@ -85,16 +85,16 @@ action :create do
   ##############################################################################
   # Initiate replica set, if it's not done already
 
-  unless replica_set_initiated
+  unless replicaSetInitiated
     Chef::Log.info "Initializing replica set..."
 
-    replica_set_config = ::BSON::OrderedHash.new
-    replica_set_config['_id'] = replica_set_name
-    replica_set_config['members'] = members.collect{|member| generate_member_config(member)}.sort_by!{|n| n['_id']}
+    replicaSetConfig = ::BSON::OrderedHash.new
+    replicaSetConfig['_id'] = replicaSetName
+    replicaSetConfig['members'] = members.collect{|member| generate_member_config(member)}.sort_by!{|n| n['_id']}
 
     begin
-      connection['admin'].command({'replSetInitiate' => replica_set_config})
-      Chef::Log.info "Replica set '#{replica_set_name}' initialized!"
+      connection['admin'].command({'replSetInitiate' => replicaSetConfig})
+      Chef::Log.info "Replica set '#{replicaSetName}' initialized!"
     rescue ::Mongo::OperationFailure => ex
       raise ex unless ex.message.include? 'already initialized'
       Chef::Log.warn "Replica set already initialized"
@@ -103,7 +103,7 @@ action :create do
     # Check replica set health
     retries = 0
     begin
-      connection = create_replica_set_connection(seed_list, replica_set_name, admin_user, admin_pass)
+      connection = createReplicaSetConnection(seed_list, replicaSetName, admin_user, admin_pass)
       res = connection['admin'].command({'replSetGetStatus' => 1})
       # Chef::Log.info res
       Chef::Log.info "Replica set is up and running!"
@@ -130,7 +130,7 @@ action :create do
   ##############################################################################
   # Check to see if we need to re-configure - doesn't apply to new replica set
 
-  if replica_set_initiated
+  if replicaSetInitiated
     Chef::Log.info "Connecting to existing replica set"
 
     # Make sure we have a replica set connection for this
@@ -140,7 +140,7 @@ action :create do
       rescue
       end
 
-      connection = create_replica_set_connection(seed_list, replica_set_name, admin_user, admin_pass)
+      connection = createReplicaSetConnection(seed_list, replicaSetName, admin_user, admin_pass)
     end
 
 
@@ -148,7 +148,7 @@ action :create do
     retries = 0
 
     begin
-      current_config = connection['local']['system']['replset'].find_one({"_id" => replica_set_name})
+      current_config = connection['local']['system']['replset'].find_one({"_id" => replicaSetName})
       current_members = current_config['members']
     rescue ::Mongo::ConnectionFailure
       raise if retries >= node['mongodb']['node_check']['retries']
@@ -164,7 +164,7 @@ action :create do
       Chef::Log.info "Waiting #{sleep_time} seconds and retrying..."
       sleep(sleep_time)
 
-      connection = create_replica_set_connection(seed_list, replica_set_name, admin_user, admin_pass)
+      connection = createReplicaSetConnection(seed_list, replicaSetName, admin_user, admin_pass)
       retry
     end
 
@@ -172,7 +172,7 @@ action :create do
     Chef::Log.info "Generating new replica set config"
 
     new_config = ::BSON::OrderedHash.new
-    new_config['_id'] = replica_set_name
+    new_config['_id'] = replicaSetName
     new_config['version'] = current_config['version'] + 1
     new_config['members'] = members.collect{|member| generate_member_config(member)}.sort_by!{|n| n['_id']}
 
@@ -187,14 +187,14 @@ action :create do
         connection['admin'].command({'replSetReconfig' => new_config})
       rescue ::Mongo::ConnectionFailure => ex # Reconfiguring closes all connections - this is normal
         Chef::Log.info "Connection closed, reconnecting..."
-        connection = create_replica_set_connection(seed_list, replica_set_name, admin_user, admin_pass)
+        connection = createReplicaSetConnection(seed_list, replicaSetName, admin_user, admin_pass)
       end
 
       Chef::Log.info "Verifying new replica set configuration..."
       retries = 0
 
       begin
-        updated_config = connection['local']['system']['replset'].find_one({"_id" => replica_set_name})
+        updated_config = connection['local']['system']['replset'].find_one({"_id" => replicaSetName})
       rescue ::Mongo::ConnectionFailure
         raise if retries >= node['mongodb']['node_check']['retries']
         Chef::Log.warn "Failed to get replica set configuration"
@@ -209,7 +209,7 @@ action :create do
         Chef::Log.info "Waiting #{sleep_time} seconds and retrying..."
         sleep(sleep_time)
 
-        connection = create_replica_set_connection(seed_list, replica_set_name, admin_user, admin_pass)
+        connection = createReplicaSetConnection(seed_list, replicaSetName, admin_user, admin_pass)
         retry
       end
 
@@ -266,8 +266,8 @@ def generate_member_config(node)
   member_config
 end
 
-def create_replica_set_connection(seed_list, replica_set_name, admin_user, admin_pass)
-  conn = ::Mongo::MongoReplicaSetClient.new(seed_list, :name => replica_set_name, :connect_timeout => 10, :read => :primary_preferred)
+def createReplicaSetConnection(seed_list, replicaSetName, admin_user, admin_pass)
+  conn = ::Mongo::MongoReplicaSetClient.new(seed_list, :name => replicaSetName, :connect_timeout => 10, :read => :primary_preferred)
 
   # Authenticate Admin DB
   db = conn['admin']

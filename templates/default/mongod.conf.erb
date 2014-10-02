@@ -35,9 +35,9 @@ journalCommitInterval = <%= node['mongodb']['journal_commit_interval'] %>
 auth = true
 <% unless node['mongodb']['auth_keyfile'].empty? %>keyFile = <%= node['mongodb']['auth_keyfile'] %><% end %>
 <% end %>
-<% unless @replica_set.empty? %>
+<% unless @replicaSet.empty? %>
 
 # Replication
-replSet = <%= @replica_set %>
+replSet = <%= @replicaSet %>
 oplogSize = <%= node['mongodb']['oplog'] -%>
 <% end %>

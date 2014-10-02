@@ -76,7 +76,7 @@ end
 
 # @TODO - port below minitest specs when we work out how to get mongo gem in env
 #
-# describe_recipe "hipsnip-mongodb_test::replica_set_lwrp_test" do
+# describe_recipe "hipsnip-mongodb_test::replicaSetLwrpTest" do
 #   include Helpers::CookbookTest
 
 #   it "should set up the individual nodes" do

@@ -23,11 +23,11 @@ if someone tries to do it here.
 Usage
 =====
 On the most basic level, just include the `hipsnip-mongodb::mongod` recipe to set up a single instance,
-or the `hipsnip-mongodb::replica_set` recipe to set up a replica set. These will set sensible
+or the `hipsnip-mongodb::replicaSet` recipe to set up a replica set. These will set sensible
 defaults and will work fine out of the box, but you have the ability to customize them
 using the attributes below.
 
-> NOTE: The `replica_set` recipe will not work with Chef Solo. You can use the resource providers
+> NOTE: The `replicaSet` recipe will not work with Chef Solo. You can use the resource providers
 below to manually build your own replica set, if you don't use Chef Server.
 
 
@@ -107,14 +107,14 @@ which are deployed on that node.
 
 ### Instance configuration
 
-These settings will be used by the `mongod` and `replica_set` recipes when configuring
+These settings will be used by the `mongod` and `replicaSet` recipes when configuring
 a new mongodb instance.
 
     default['mongodb']['mongod']['port'] # The port to run the instance on (defaults to 27017)
     default['mongodb']['mongod']['bind_ip'] # Comma-separated list of IPs to bind to - leave blank to bind to all (defauts to '')
 
     # The attributes below are only used when setting up replica sets
-	default['mongodb']['mongod']['replica_set'] # The replica set to join (defaults to 'my_set')
+	default['mongodb']['mongod']['replicaSet'] # The replica set to join (defaults to 'my_set')
     default['mongodb']['mongod']['arbiter_only'] # defaults to False
     default['mongodb']['mongod']['build_indexes'] # defaults to True
     default['mongodb']['mongod']['hidden'] # defaults to False
@@ -152,11 +152,11 @@ See below for examples.
 
 * bind_ip : The IP address to bind to - leave empty to bind to all addresses (defaults to "")
 * port : The port to run the MongoDB service on (defaults to 27017)
-* replica_set : The name of the replica set this node will be a part of - leave
+* replicaSet : The name of the replica set this node will be a part of - leave
 blank to configure without a replica set (defaults to "")
 
-> NOTE: Setting the `replica_set` attribute alone will not trigger replica set
-creation. You need to use the `hipsnip_mongodb_replica_set` provider to do that.
+> NOTE: Setting the `replicaSet` attribute alone will not trigger replica set
+creation. You need to use the `hipsnip_mongodb_replicaSet` provider to do that.
 
 ### Examples
 
@@ -173,7 +173,7 @@ with the config file `/etc/mongodb/mongod-primary.conf` and data stored under `/
 
     hipsnip_mongodb_mongod "primary" do
         port 27019
-        replica_set "my_set"
+        replicaSet "my_set"
     end
 
 It will also fill in the `replSet` configuration directive, but will not initialize
@@ -213,7 +213,7 @@ To run a health check on the default node:
 
 
 
-## hipsnip_mongodb_replica_set
+## hipsnip_mongodb_replicaSet
 
 Takes a list of member nodes, and then it either initializes or updates the given
 replica set (if it already exists). It also performs a health check after the replica
@@ -227,7 +227,7 @@ and `node['mongodb']['node_check']['retries']`.
 
 ### Attributes
 
-* replica_set : The name of the replica set (name attribute)
+* replicaSet : The name of the replica set (name attribute)
 * members : The list of member nodes
 
 The member nodes are represented as hashes, and have the following fields:
@@ -249,7 +249,7 @@ refer to the MongoDB documentation for details.
 
 To set up a replica set with a couple of nodes:
 
-    hipsnip_mongodb_replica_set "my_set" do
+    hipsnip_mongodb_replicaSet "my_set" do
         members [
             {
                 'id' => 0,

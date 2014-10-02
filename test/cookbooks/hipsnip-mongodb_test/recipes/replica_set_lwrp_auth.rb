@@ -26,4 +26,4 @@ node.set['mongodb']['admin_user']['name'] = "administrator"
 node.set['mongodb']['admin_user']['password'] = "testpass"
 
 # Just augment the default test case with authentication
-include_recipe "hipsnip-mongodb_test::replica_set_lwrp"
+include_recipe "hipsnip-mongodb_test::replicaSetLwrp"

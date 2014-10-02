@@ -35,7 +35,7 @@ action :create do
       'bind_ip' => new_resource.bind_ip,
       'port' => new_resource.port,
       'db_path' => ::File.join(node['mongodb']['data_dir'], instance_name),
-      'replica_set' => new_resource.replica_set
+      'replicaSet' => new_resource.replicaSet
     })
 
     notifies :restart, "service[#{instance_name}]"
