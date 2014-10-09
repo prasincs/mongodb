@@ -67,9 +67,9 @@ action :create do
     end
   else
     begin
-      connection = create_replica_set_connection(seed_list, replica_set_name, admin_user, admin_pass)
-      connection['admin'].command({'replSetGetStatus' => 1}) 
-      replica_set_initiated = true
+      connection = createReplicaSetConnection(seed_list, replicaSetName, admin_user, admin_pass)
+      connection['admin'].command({'replSetGetStatus' => 1})
+      replicaSetInitiated = true
     rescue ::Mongo::ConnectionFailure => ex
       # unless it's telling us that these members don't form a replica set
       unless ex.message.include? 'Cannot connect to a replica set using seeds'

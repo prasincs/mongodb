@@ -32,4 +32,4 @@ default['mongodb']['mongod']['slave_delay'] = 0
 default['mongodb']['mongod']['votes'] = 1
 
 # Use the value of this property when setting the address for a given replica set node
-default['mongodb']['node_address_attribute'] = 'fqdn' # leave blank to use 'bind_ip' - can't both be blank!
+default['mongodb']['node_address_attribute'] = 'ipaddress' # leave blank to use 'bind_ip' - can't both be blank!
