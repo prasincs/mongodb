@@ -16,6 +16,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
+require 'pry'
 include_recipe "hipsnip-mongodb::default"
 if Chef::Config[:solo]
   raise "Sorry - this recipe is for Chef Server only"
@@ -50,10 +51,10 @@ replica_set_members = replica_set_nodes.collect do |replica_set_node|
     nil
   end
 end
-
+binding.pry
 Chef::Log.info "Replica Set Members #{replica_set_members}"
 replica_set_members = replica_set_members.compact # Remove the nils
-
+binding.pry
 Chef::Log.info "Replica Set Members #{replica_set_members}"
 
 ############################
